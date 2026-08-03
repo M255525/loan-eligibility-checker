@@ -462,8 +462,8 @@ function buildConclusion(ph, ui, bizType){
   const lines = [];
   if(ph.overall==='fail') lines.push('微型創業鳳凰貸款目前已確定不符合，原因：'+(ph.items.find(i=>i.status==='fail')||{}).reason);
   if(ui.overall==='fail') lines.push('就業保險失業者創業貸款目前已確定不符合，原因：'+(ui.items.find(i=>i.status==='fail')||{}).reason);
-  lines.push('請完成上方問卷所有題目，才能取得完整的資格建議。');
-  return {tone:'info', title:'📝 請完成問卷以取得完整建議', lines};
+  if(lines.length===0) lines.push('目前尚無法判斷是否符合任一方案，歡迎繼續填答上方問題，畫面會即時更新。');
+  return {tone:'info', title:'📝 尚未填答完整', lines};
 }
 
 function render(){
