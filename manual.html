@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>操作手冊｜創業貸款資格核對小工具</title>
+<style>
+  :root{
+    --blue:#2563EB; --blue-dark:#1e3a8a; --bg:#f4f6fb; --card:#ffffff;
+    --border:#dbe0ea; --text:#1f2937; --muted:#6b7280; --danger:#dc2626; --ok:#16a34a;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:"Microsoft JhengHei","PingFang TC",sans-serif;
+    background:var(--bg); color:var(--text); line-height:1.9;
+  }
+  header{
+    background:linear-gradient(135deg,var(--blue-dark),var(--blue));
+    color:#fff; padding:22px 24px;
+  }
+  header h1{font-size:1.3rem; margin:0;}
+  header p{margin:4px 0 0; font-size:.85rem; opacity:.85;}
+  header a{
+    display:inline-block; margin-top:12px; color:#fff; text-decoration:none;
+    background:rgba(255,255,255,.15); padding:7px 16px; border-radius:6px; font-size:.85rem; font-weight:600;
+  }
+  header a:hover{background:rgba(255,255,255,.28);}
+  main{max-width:860px; margin:0 auto; padding:24px 16px 60px;}
+  .card{
+    background:var(--card); border:1px solid var(--border); border-radius:10px;
+    padding:20px 24px; margin-bottom:18px;
+  }
+  h2{
+    font-size:1.1rem; color:var(--blue-dark); margin:0 0 12px;
+    padding-bottom:8px; border-bottom:2px solid #eef2ff;
+  }
+  h3{font-size:.95rem; color:var(--blue-dark); margin:18px 0 6px;}
+  p{margin:8px 0;}
+  ul,ol{margin:8px 0; padding-left:24px;}
+  li{margin:4px 0;}
+  table{width:100%; border-collapse:collapse; margin:10px 0; font-size:.88rem;}
+  th,td{border:1px solid var(--border); padding:8px 12px; text-align:left; vertical-align:top;}
+  th{background:#f4f6fb; color:var(--blue-dark); white-space:nowrap;}
+  .warning{
+    background:#fef2f2; border:1px solid #fca5a5; border-radius:8px;
+    padding:14px 18px; color:#991b1b; font-weight:600; margin-bottom:18px;
+  }
+  .warning small{display:block; font-weight:400; margin-top:6px; color:#b91c1c;}
+  .tip{
+    background:#eef2ff; border-left:4px solid var(--blue); border-radius:0 8px 8px 0;
+    padding:10px 14px; font-size:.86rem; margin:10px 0;
+  }
+  .badge{
+    display:inline-block; background:#eef2ff; color:var(--blue-dark);
+    border-radius:999px; padding:2px 12px; font-size:.78rem; font-weight:600; margin-right:6px;
+  }
+  footer{text-align:center; padding:18px; font-size:.78rem; color:var(--muted); line-height:1.8;}
+  footer a{color:var(--blue);}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>操作手冊</h1>
+  <p>創業貸款資格核對小工具</p>
+  <a href="index.html">← 回到工具</a>
+</header>
+
+<main>
+
+<div class="warning">
+  ⚠ 本工具僅供教學、課程及個人使用，禁止未經授權公開發布、販售或商業化使用。
+  <small>本工具僅做「資格自我核對」，並非官方審查系統；正式核准與核貸金額，仍由勞動部勞動力發展署、信保基金、承貸金融機構代表及專家學者組成之審查會綜合評估決定。</small>
+</div>
+
+<div class="card">
+  <h2>這是什麼工具？</h2>
+  <p>一個單檔、免安裝的網頁工具，讓有意申請創業貸款的人在正式送件前，先依「微型創業鳳凰貸款要點」與「就業保險失業者創業協助辦法」（兩者皆自115年8月1日生效）逐條核對自己是否符合資格，並比較兩方案分別適不適合自己。用瀏覽器打開 <code>index.html</code> 即可使用，不需要架伺服器、不需要安裝任何軟體、不會把任何資料送到伺服器。</p>
+  <p><strong>本工具不做申請書填表</strong>——若已確定要申請「微型創業鳳凰貸款」並要填寫正式申請書，請改用同一分類目錄下的 <code>phoenix-loan-generator</code> 工具。</p>
+</div>
+
+<div class="card">
+  <h2>功能總覽</h2>
+
+  <h3><span class="badge">1</span>問答式健檢</h3>
+  <p>依序回答「事業登記狀況」「負責人身分與經營狀況」「個人資格條件」「信用與貸款紀錄」四大區塊的問題，畫面下方「核對結果」會即時更新，不需要按送出按鈕。</p>
+
+  <h3><span class="badge">2</span>逐條 checklist</h3>
+  <p>兩個方案（微型創業鳳凰貸款／就業保險失業者創業貸款）各自列出所有適用的資格條件，每條標示 ✅ 符合／❌ 不符合（附原因與法規出處）／⚠️ 尚未填答。</p>
+
+  <h3><span class="badge">3</span>結論卡片與貸款額度</h3>
+  <p>依填答結果自動判斷：兩者都不符合時列出關鍵原因；僅一方符合時建議申請該方案並顯示最高貸款額度（依事業登記型態試算 50 萬或 200 萬）；兩者皆符合時說明「同一事業只能擇一申請」的互斥規定，並列出兩方案的差異重點供自行判斷。</p>
+
+  <h3><span class="badge">4</span>增貸備註（選填）</h3>
+  <p>若您是同一事業要辦理「增貸」，勾選頁面底部的核取方塊，會顯示增貸次數上限與累計核給金額規定的提醒文字。</p>
+</div>
+
+<div class="card">
+  <h2>使用方式</h2>
+  <ol>
+    <li>直接用瀏覽器（建議 Chrome / Edge）開啟 <code>index.html</code></li>
+    <li>由上而下依序填答每個問題</li>
+    <li>畫面下方「核對結果」即時顯示兩方案的逐條核對與結論</li>
+    <li>依結論決定要申請哪個方案，再前往勞動部勞動力發展署所屬分署或洽詢顧問辦理正式申請</li>
+    <li>若要重新核對，可按右上角「重新填寫」清空所有內容</li>
+  </ol>
+</div>
+
+<div class="card">
+  <h2>重要提醒</h2>
+  <ul>
+    <li>本工具的判斷邏輯是依兩份法規條文逐條整理而成，僅供自我核對參考，<strong>不具法律效力</strong></li>
+    <li>法規條文如有再次修正，本工具的判斷邏輯需要對照更新，請以勞動部勞動力發展署最新公告為準</li>
+    <li>兩份法規皆提及第三個互斥方案「失業中高齡者及高齡者創業貸款」，本工具僅將其納入「已獲貸且未清償則排除資格」的判斷，未取得該法規全文，故不單獨提供其資格核對</li>
+    <li>填答內容僅存在您瀏覽器的記憶體中，重新整理頁面即會清空，不會被儲存或送出</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>創作者資料</h2>
+  <p><strong>Mark Tsai（蔡豐全）</strong></p>
+  <p>聯絡信箱：<a href="mailto:tsaimark@gmail.com">tsaimark@gmail.com</a></p>
+
+  <h3>專長</h3>
+  <p>銷售數據分析、AI 工具運用、政府補助計畫申請、創業、跨境電商</p>
+
+  <h3>證照</h3>
+  <ul>
+    <li>青創總會 創業輔導顧問師班（2013）</li>
+    <li>青創總會 網路行銷講師培訓班（2014）</li>
+    <li>阿里巴巴 P4P 認證講師（2016）</li>
+    <li>iCap 訓練規劃與評量職能基準課程（2017）</li>
+    <li>iCap 職能導向課程申請認證實作班（2023）</li>
+    <li>iPAS AI 應用規劃師－初級（2025）</li>
+    <li>新北市社會局社區數位陪伴員（2025）</li>
+  </ul>
+
+  <h3>經歷</h3>
+  <ul>
+    <li>勞動力發展署桃竹苗分署 創業顧問（2017－迄今）</li>
+    <li>勞動力發展署（北北基）小型企業人力提升計畫 顧問（2019－迄今）</li>
+    <li>勞動力發展署（桃竹苗）小型企業人力提升計畫 顧問（2019－迄今）</li>
+    <li>農業部農業科技司「科技農企業雙軸轉型躍升發展」科技計畫 業師（2025－2026）</li>
+    <li>勞動力發展署 企業人力資源提升計畫 審查委員（2024）</li>
+    <li>勞動力發展署 職前訓練評鑑計畫 委員（2022）</li>
+    <li>勞動部桃竹苗分署－桃竹苗區域運籌人力資源整合服務計畫 顧問（2022－2023）</li>
+    <li>經濟部中小企業處 SBIR 海選專案 評審委員（2019－2024）</li>
+    <li>勞動力發展署 數位學習課程清單審查會議 審查委員（2024－2025）</li>
+    <li>輔仁大學創新跨領域學院 課務委員（2024－2025）</li>
+    <li>台北市進出口商業同業公會 跨境電商生態村 顧問</li>
+    <li>台灣網商協會 顧問</li>
+    <li>中華職能開發策進會 顧問（2018－2020）</li>
+    <li>新北市汽車美容人員職業工會 顧問（2023－迄今）</li>
+    <li>中華網路行銷講師協會 顧問（2022－迄今）</li>
+    <li>新北市社企電商基地 輔導顧問（2018－2020）</li>
+    <li>阿里巴巴國際站平台 認證講師（2016）</li>
+    <li>巨匠電腦 跨境電子商務班 講師（2016－2017）</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>授權與使用限制</h2>
+  <p>本工具僅供<strong>教學、課程及個人使用</strong>，禁止未經授權公開發布、販售或商業化使用。如需其他用途，請先取得創作者授權。</p>
+</div>
+
+</main>
+
+<footer>
+  製作：Mark Tsai｜<a href="index.html">回到工具</a>
+</footer>
+
+</body>
+</html>

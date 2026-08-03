@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>創業貸款資格核對小工具</title>
+<style>
+  :root{
+    --blue:#2563EB; --blue-dark:#1e3a8a; --bg:#f4f6fb; --card:#ffffff;
+    --border:#dbe0ea; --text:#1f2937; --muted:#6b7280; --danger:#dc2626; --ok:#16a34a; --warn:#b45309;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:"Microsoft JhengHei","PingFang TC",sans-serif;
+    background:var(--bg); color:var(--text);
+  }
+  header{
+    background:linear-gradient(135deg,var(--blue-dark),var(--blue));
+    color:#fff; padding:18px 24px; display:flex; align-items:center; justify-content:space-between;
+    flex-wrap:wrap; gap:10px;
+  }
+  header h1{font-size:1.25rem; margin:0;}
+  header p{margin:2px 0 0; font-size:.8rem; opacity:.85;}
+  .actions{display:flex; gap:8px; flex-wrap:wrap;}
+  button{
+    cursor:pointer; border:none; border-radius:6px; padding:8px 14px; font-size:.85rem;
+    background:#fff; color:var(--blue-dark); font-weight:600;
+  }
+  button.secondary{background:rgba(255,255,255,.15); color:#fff;}
+  button:hover{filter:brightness(0.95);}
+  main{max-width:960px; margin:0 auto; padding:20px 16px 80px;}
+  .card{
+    background:var(--card); border:1px solid var(--border); border-radius:10px;
+    padding:18px 20px; margin-bottom:16px;
+  }
+  .card h2{font-size:1.05rem; margin:0 0 4px; color:var(--blue-dark);}
+  .card .hint{font-size:.78rem; color:var(--muted); margin:0 0 14px;}
+  .intro{background:#eef2ff; border:1px solid #c7d2fe;}
+  .intro p{margin:4px 0; font-size:.85rem; line-height:1.7;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px 16px;}
+  .field{display:flex; flex-direction:column; gap:4px;}
+  .field.full{grid-column:1/-1;}
+  label{font-size:.8rem; color:var(--muted); font-weight:600;}
+  label .tag{display:inline-block; font-size:.68rem; font-weight:700; padding:1px 6px; border-radius:4px; margin-left:6px; vertical-align:middle;}
+  label .tag.tag-phoenix{background:#dbeafe; color:var(--blue-dark);}
+  label .tag.tag-ui{background:#fce7f3; color:#9d174d;}
+  label .tag.tag-both{background:#dcfce7; color:var(--ok);}
+  input[type=number],input[type=date],select{
+    border:1px solid var(--border); border-radius:6px; padding:8px 10px; font-size:.88rem;
+    font-family:inherit; background:#fbfcfe;
+  }
+  .radio-row{display:flex; gap:14px; flex-wrap:wrap; font-size:.85rem;}
+  .radio-row label{font-weight:400; color:var(--text); display:flex; align-items:center; gap:5px;}
+  .q-block{border-top:1px solid #eef1f6; padding-top:12px; margin-top:12px;}
+  .q-block:first-child{border-top:none; padding-top:0; margin-top:0;}
+  .q-block > label.q-label{display:block; font-size:.85rem; color:var(--text); font-weight:600; margin-bottom:6px;}
+  .note-box{background:#fff7ed; border:1px solid #fdba74; border-radius:8px; padding:10px 12px; font-size:.8rem; color:#9a3412; margin-top:8px;}
+
+  /* results */
+  #results{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media (max-width:760px){#results{grid-template-columns:1fr;}}
+  .program-card{border-radius:10px; border:1px solid var(--border); background:#fff; padding:16px 18px;}
+  .program-card h3{margin:0 0 2px; font-size:1rem;}
+  .program-card .doc-ref{font-size:.72rem; color:var(--muted); margin:0 0 10px;}
+  .status-badge{display:inline-block; font-size:.8rem; font-weight:700; padding:4px 10px; border-radius:20px; margin-bottom:12px;}
+  .status-badge.pass{background:#dcfce7; color:var(--ok);}
+  .status-badge.fail{background:#fee2e2; color:var(--danger);}
+  .status-badge.pending{background:#fef3c7; color:var(--warn);}
+  ul.rule-list{list-style:none; margin:0; padding:0;}
+  ul.rule-list li{display:flex; gap:8px; font-size:.8rem; line-height:1.6; padding:6px 0; border-bottom:1px dashed #eef1f6;}
+  ul.rule-list li:last-child{border-bottom:none;}
+  ul.rule-list li .icon{flex-shrink:0;}
+  ul.rule-list li .txt .clause{color:var(--muted); font-size:.72rem;}
+  ul.rule-list li .txt .reason{color:var(--danger); font-size:.75rem; margin-top:2px;}
+  .status-pass{color:var(--ok);}
+  .status-fail{color:var(--danger);}
+  .status-pending{color:var(--warn);}
+  .cap-line{margin-top:12px; font-size:.82rem; font-weight:600; color:var(--blue-dark); background:#eef2ff; border-radius:6px; padding:6px 10px;}
+  #conclusion{margin-top:16px; border-radius:10px; padding:18px 20px; border:1px solid var(--border);}
+  #conclusion.tone-pass{background:#f0fdf4; border-color:#bbf7d0;}
+  #conclusion.tone-fail{background:#fef2f2; border-color:#fecaca;}
+  #conclusion.tone-warn{background:#fffbeb; border-color:#fde68a;}
+  #conclusion.tone-info{background:#eff6ff; border-color:#bfdbfe;}
+  #conclusion h3{margin:0 0 8px; font-size:1.05rem;}
+  #conclusion ul{margin:6px 0 0; padding-left:20px; font-size:.85rem; line-height:1.8;}
+  footer{max-width:960px; margin:0 auto; padding:10px 16px 40px; font-size:.72rem; color:var(--muted); text-align:center;}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>創業貸款資格核對小工具</h1>
+    <p>依「微型創業鳳凰貸款要點」與「就業保險失業者創業協助辦法」（皆自115年8月1日生效）逐條核對，供申請前自我檢核用</p>
+  </div>
+  <div class="actions">
+    <a href="manual.html" target="_blank" style="text-decoration:none;"><button class="secondary" type="button">操作手冊</button></a>
+    <button id="btnReset" class="secondary">重新填寫</button>
+  </div>
+</header>
+
+<main id="main">
+
+<div class="card intro">
+  <h2>使用說明</h2>
+  <p>本工具僅供申請人自我核對兩份創業貸款方案的資格條件，<strong>非官方審查結果</strong>；正式核准與核貸金額，仍由勞動部勞動力發展署、信保基金、承貸金融機構代表及專家學者組成之審查會綜合評估決定。填答內容不會送出到任何伺服器，僅在您的瀏覽器中即時運算。</p>
+  <p>依序填答下列問題，畫面下方「核對結果」會即時更新。</p>
+</div>
+
+<div class="card">
+  <h2>一、事業登記狀況</h2>
+  <p class="hint">對應兩份法規之登記型態與貸款額度規定。</p>
+  <div class="grid">
+    <div class="field">
+      <label>事業目前的登記型態</label>
+      <select id="bizType">
+        <option value="">請選擇</option>
+        <option value="company">公司登記／商業登記／有限合夥登記</option>
+        <option value="childcare">托嬰中心／幼兒園／兒童課後照顧服務中心／短期補習班（立案登記）</option>
+        <option value="smallBiz">免申請商業登記之小規模商業（攤販／家庭農林漁牧業／家庭手工業／民宿經營／月銷售額未達營業稅起徵點），已完成稅籍登記</option>
+        <option value="none">尚未登記，或都不屬於以上任何一種</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>事業設立（或立案／稅籍登記）日期<span class="tag tag-phoenix">鳳凰貸款用</span></label>
+      <input type="date" id="setupDate">
+    </div>
+    <div class="field">
+      <label>員工人數（不包括代表人／負責人）<span class="tag tag-phoenix">鳳凰貸款用</span></label>
+      <input type="number" id="employeeCount" min="0" placeholder="請輸入人數">
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>二、負責人身分與經營狀況</h2>
+  <div class="q-block">
+    <label class="q-label">您是否已登記為此事業的代表人／負責人，並實際經營該事業？</label>
+    <div class="radio-row" data-name="isResponsiblePerson">
+      <label><input type="radio" name="isResponsiblePerson" value="yes">是</label>
+      <label><input type="radio" name="isResponsiblePerson" value="no">否</label>
+    </div>
+  </div>
+  <div class="q-block">
+    <label class="q-label">您是否「目前」同時擔任其他事業的代表人、負責人、合夥人、董事或監察人？<span class="tag tag-phoenix">鳳凰貸款用</span></label>
+    <div class="radio-row" data-name="concurrentOtherBiz">
+      <label><input type="radio" name="concurrentOtherBiz" value="yes">是</label>
+      <label><input type="radio" name="concurrentOtherBiz" value="no">否</label>
+    </div>
+  </div>
+  <div class="q-block">
+    <label class="q-label">您登記為本事業負責人「之前14日內」，是否仍有就業保險（勞保／就業保險）投保紀錄，或仍擔任其他事業的負責人？<span class="tag tag-ui">就業保險方案用</span></label>
+    <div class="radio-row" data-name="before14days">
+      <label><input type="radio" name="before14days" value="yes">是</label>
+      <label><input type="radio" name="before14days" value="no">否</label>
+    </div>
+  </div>
+  <div class="q-block">
+    <label class="q-label">您是否已接受政府創業諮詢輔導及適性分析？<span class="tag tag-both">兩方案皆需</span></label>
+    <div class="radio-row" data-name="consultingDone">
+      <label><input type="radio" name="consultingDone" value="yes">是</label>
+      <label><input type="radio" name="consultingDone" value="no">否</label>
+    </div>
+  </div>
+  <div class="q-block">
+    <label class="q-label">您是否已於最近3年內完成政府（勞動力發展署或政府機關）創業研習課程至少18小時？<span class="tag tag-both">兩方案皆需</span></label>
+    <div class="radio-row" data-name="courseHoursEnough">
+      <label><input type="radio" name="courseHoursEnough" value="yes">是</label>
+      <label><input type="radio" name="courseHoursEnough" value="no">否</label>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>三、個人資格條件</h2>
+  <div class="q-block">
+    <label class="q-label">您的性別、年齡、戶籍地符合下列哪一項？<span class="tag tag-phoenix">鳳凰貸款用</span></label>
+    <select id="genderAgeIsland">
+      <option value="">請選擇</option>
+      <option value="femaleUnder45">女性，且未滿45歲</option>
+      <option value="age45to65">年滿45歲至65歲（不分性別）</option>
+      <option value="under65Island">65歲以下，且設籍於離島</option>
+      <option value="none">皆非以上（例如：男性45歲以下且非離島；或超過65歲且非離島）</option>
+    </select>
+  </div>
+  <div class="q-block">
+    <label class="q-label">您是否具備就業保險被保險人身分（曾以受僱身分投保勞保／就業保險）？<span class="tag tag-ui">就業保險方案用</span></label>
+    <div class="radio-row" data-name="isInsured">
+      <label><input type="radio" name="isInsured" value="yes">是</label>
+      <label><input type="radio" name="isInsured" value="no">否</label>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>四、信用與貸款紀錄</h2>
+  <div class="q-block">
+    <label class="q-label">您或您的事業，是否有下列任一情形：票據拒絕往來、退票尚未清償註記、金融聯合徵信中心信用瑕疵（債務逾期未清償／未依約分期攤還超過1個月／延滯繳息達3個月以上／信用卡強制停卡且未繳清延滯款項）？<span class="tag tag-both">兩方案皆需</span></label>
+    <div class="radio-row" data-name="creditIssue">
+      <label><input type="radio" name="creditIssue" value="yes">是</label>
+      <label><input type="radio" name="creditIssue" value="no">否</label>
+    </div>
+  </div>
+  <div class="q-block">
+    <label class="q-label">同一事業是否已獲貸「就業保險失業者創業貸款」或「失業中高齡者及高齡者創業貸款」，且尚未清償？<span class="tag tag-phoenix">鳳凰貸款用</span></label>
+    <div class="radio-row" data-name="sameBizOtherLoanUI">
+      <label><input type="radio" name="sameBizOtherLoanUI" value="yes">是</label>
+      <label><input type="radio" name="sameBizOtherLoanUI" value="no">否</label>
+    </div>
+  </div>
+  <div class="q-block">
+    <label class="q-label">同一事業是否已獲貸「微型創業鳳凰貸款」或「失業中高齡者及高齡者創業貸款」，且尚未清償？<span class="tag tag-ui">就業保險方案用</span></label>
+    <div class="radio-row" data-name="sameBizOtherLoanPhoenix">
+      <label><input type="radio" name="sameBizOtherLoanPhoenix" value="yes">是</label>
+      <label><input type="radio" name="sameBizOtherLoanPhoenix" value="no">否</label>
+    </div>
+  </div>
+  <div class="q-block">
+    <label class="q-label">您（負責人）是否曾以「其他事業」獲得「微型創業鳳凰貸款」「就業保險失業者創業貸款」「失業中高齡者及高齡者創業貸款」其中之一，且尚未清償？<span class="tag tag-both">兩方案皆需</span></label>
+    <div class="radio-row" data-name="respOtherBizLoan">
+      <label><input type="radio" name="respOtherBizLoan" value="yes">是</label>
+      <label><input type="radio" name="respOtherBizLoan" value="no">否</label>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>五、增貸備註（選填）</h2>
+  <label style="font-size:.85rem; display:flex; align-items:center; gap:8px; font-weight:400;">
+    <input type="checkbox" id="isRepeatLoan"> 本次是否為同一事業要辦理「增貸」（先前已獲貸且尚未達2次上限）？
+  </label>
+  <div class="note-box" id="repeatLoanNote" style="display:none;">
+    增貸提醒：貸款期間內最多可增貸2次，首次、第二次及第三次貸款核給金額合計不得超過方案最高額度上限；若未變更負責人，可免附創業研習課程證明文件等部分文件。以下資格核對結果仍適用於增貸案件，正式送件內容請洽承辦分署確認最新規定。
+  </div>
+</div>
+
+<h2 style="color:var(--blue-dark); margin:24px 0 10px;">核對結果</h2>
+<div id="results">
+  <div class="program-card" id="card-phoenix"></div>
+  <div class="program-card" id="card-ui"></div>
+</div>
+<div id="conclusion"></div>
+
+</main>
+
+<footer>
+  本工具依 2026年7月30日勞動部令修正「微型創業鳳凰貸款要點」與 2026年6月10日勞動部令修正「就業保險失業者創業協助辦法」條文整理，僅供自我核對參考，不具法律效力，實際規定請以勞動部勞動力發展署最新公告為準。
+</footer>
+
+<script>
+(function(){
+
+const PROGRAM_META = {
+  phoenix:{ name:'微型創業鳳凰貸款', doc:'微型創業鳳凰貸款要點（115.8.1生效）' },
+  ui:{ name:'就業保險失業者創業貸款', doc:'就業保險失業者創業協助辦法（115.8.1生效）' }
+};
+
+function yearsSince(dateStr){
+  const d = new Date(dateStr);
+  if(isNaN(d.getTime())) return null;
+  return (Date.now() - d.getTime()) / (1000*60*60*24*365.25);
+}
+
+const RULES = [
+  {
+    id:'registration', programs:['phoenix','ui'],
+    clause:{phoenix:'第四點', ui:'第六條'},
+    text:'已完成事業登記／立案登記，或屬完成稅籍登記之免登記小規模商業',
+    evaluate:a=>{ if(!a.bizType) return 'pending'; return a.bizType==='none' ? 'fail':'pass'; },
+    reasonFail:()=>'尚未完成事業登記／立案登記／稅籍登記，需先辦理登記手續才能申請任一方案'
+  },
+  {
+    id:'setupYears', programs:['phoenix'],
+    clause:{phoenix:'第四點'},
+    text:'事業設立（或立案）登記未超過5年',
+    evaluate:a=>{ const y=yearsSince(a.setupDate); if(y===null) return 'pending'; return y<=5?'pass':'fail'; },
+    reasonFail:a=>`事業設立已約 ${yearsSince(a.setupDate).toFixed(1)} 年，超過鳳凰貸款「設立未逾5年」上限`
+  },
+  {
+    id:'employeeCount', programs:['phoenix'],
+    clause:{phoenix:'第四點'},
+    text:'員工人數（不含負責人）未滿5人',
+    evaluate:a=>{ if(a.employeeCount==='' || a.employeeCount==null) return 'pending'; return Number(a.employeeCount)<5?'pass':'fail'; },
+    reasonFail:a=>`員工人數（不含負責人）為 ${a.employeeCount} 人，未低於5人門檻`
+  },
+  {
+    id:'isResponsiblePerson', programs:['phoenix','ui'],
+    clause:{phoenix:'第三點第(二)款', ui:'第五條第三款'},
+    text:'登記為事業代表人／負責人，並有實際經營該事業之事實',
+    evaluate:a=> a.isResponsiblePerson==='yes'?'pass': a.isResponsiblePerson==='no'?'fail':'pending',
+    reasonFail:()=>'尚未登記為負責人或未實際經營，需先完成負責人登記並實際經營該事業'
+  },
+  {
+    id:'concurrentOtherBiz', programs:['phoenix'],
+    clause:{phoenix:'第三點第(三)款'},
+    text:'未同時擔任其他事業之負責人、合夥人、董事或監察人',
+    evaluate:a=> a.concurrentOtherBiz==='no'?'pass': a.concurrentOtherBiz==='yes'?'fail':'pending',
+    reasonFail:()=>'您目前同時擔任其他事業之負責人／合夥人／董事／監察人，不符合本方案規定'
+  },
+  {
+    id:'before14days', programs:['ui'],
+    clause:{ui:'第五條第四款'},
+    text:'登記為本事業負責人前14日內，無就業保險投保紀錄且未擔任其他事業負責人',
+    evaluate:a=> a.before14days==='no'?'pass': a.before14days==='yes'?'fail':'pending',
+    reasonFail:()=>'登記為負責人前14日內仍有投保紀錄或仍擔任其他事業負責人，不符合本方案規定'
+  },
+  {
+    id:'consultingDone', programs:['phoenix','ui'],
+    clause:{phoenix:'第三點第(一)款', ui:'第五條第一款'},
+    text:'已接受政府創業諮詢輔導及適性分析',
+    evaluate:a=> a.consultingDone==='yes'?'pass': a.consultingDone==='no'?'fail':'pending',
+    reasonFail:()=>'尚未接受創業諮詢輔導及適性分析，需先完成此程序'
+  },
+  {
+    id:'courseHoursEnough', programs:['phoenix','ui'],
+    clause:{phoenix:'第三點第(一)款', ui:'第五條第二款'},
+    text:'3年內完成政府創業研習課程至少18小時',
+    evaluate:a=> a.courseHoursEnough==='yes'?'pass': a.courseHoursEnough==='no'?'fail':'pending',
+    reasonFail:()=>'研習時數不足18小時或已逾3年，需補足研習課程時數'
+  },
+  {
+    id:'genderAgeIsland', programs:['phoenix'],
+    clause:{phoenix:'第三點'},
+    text:'身分符合：女性未滿45歲／45～65歲（不分性別）／65歲以下且設籍離島 三者擇一',
+    evaluate:a=>{ if(!a.genderAgeIsland) return 'pending'; return a.genderAgeIsland==='none'?'fail':'pass'; },
+    reasonFail:()=>'年齡、性別、戶籍地條件皆不符合鳳凰貸款「三者擇一」的身分規定'
+  },
+  {
+    id:'isInsured', programs:['ui'],
+    clause:{ui:'第二條、第五條'},
+    text:'具備就業保險被保險人身分（曾以受僱身分投保）',
+    evaluate:a=> a.isInsured==='yes'?'pass': a.isInsured==='no'?'fail':'pending',
+    reasonFail:()=>'非就業保險被保險人，不符合本方案之基本申請資格'
+  },
+  {
+    id:'creditIssue', programs:['phoenix','ui'],
+    clause:{phoenix:'第八點第(一)(二)款', ui:'第十七條第一、二款'},
+    text:'無票據拒絕往來、無金融聯合徵信中心信用瑕疵紀錄',
+    evaluate:a=> a.creditIssue==='no'?'pass': a.creditIssue==='yes'?'fail':'pending',
+    reasonFail:()=>'您勾選有票據或信用瑕疵紀錄，依規定不予核給貸款'
+  },
+  {
+    id:'sameBizOtherLoanUI', programs:['phoenix'],
+    clause:{phoenix:'第八點第(四)款'},
+    text:'同一事業未曾獲貸「就業保險失業者創業貸款」或「失業中高齡者及高齡者創業貸款」且尚未清償',
+    evaluate:a=> a.sameBizOtherLoanUI==='no'?'pass': a.sameBizOtherLoanUI==='yes'?'fail':'pending',
+    reasonFail:()=>'同一事業已獲貸就業保險創業貸款或中高齡創業貸款且尚未清償，不得再申請鳳凰貸款'
+  },
+  {
+    id:'sameBizOtherLoanPhoenix', programs:['ui'],
+    clause:{ui:'第十七條第五款'},
+    text:'同一事業未曾獲貸「微型創業鳳凰貸款」或「失業中高齡者及高齡者創業貸款」且尚未清償',
+    evaluate:a=> a.sameBizOtherLoanPhoenix==='no'?'pass': a.sameBizOtherLoanPhoenix==='yes'?'fail':'pending',
+    reasonFail:()=>'同一事業已獲貸鳳凰貸款或中高齡創業貸款且尚未清償，不得再申請本方案'
+  },
+  {
+    id:'respOtherBizLoan', programs:['phoenix','ui'],
+    clause:{phoenix:'第八點第(五)款', ui:'第十七條第六款'},
+    text:'負責人未曾以其他事業獲得鳳凰貸款／就業保險創業貸款／中高齡創業貸款其中之一，且尚未清償',
+    evaluate:a=> a.respOtherBizLoan==='no'?'pass': a.respOtherBizLoan==='yes'?'fail':'pending',
+    reasonFail:()=>'您（負責人）已以其他事業獲得上述貸款其中之一且尚未清償，不得再以本事業申請'
+  }
+];
+
+function loanCap(bizType){
+  if(bizType==='company'||bizType==='childcare') return 200;
+  if(bizType==='smallBiz') return 50;
+  return null;
+}
+
+function getAnswers(){
+  const a = {};
+  a.bizType = document.getElementById('bizType').value;
+  a.setupDate = document.getElementById('setupDate').value;
+  a.employeeCount = document.getElementById('employeeCount').value;
+  a.genderAgeIsland = document.getElementById('genderAgeIsland').value;
+  a.isRepeatLoan = document.getElementById('isRepeatLoan').checked;
+  ['isResponsiblePerson','concurrentOtherBiz','before14days','consultingDone','courseHoursEnough',
+   'isInsured','creditIssue','sameBizOtherLoanUI','sameBizOtherLoanPhoenix','respOtherBizLoan'].forEach(name=>{
+    const checked = document.querySelector('input[name="'+name+'"]:checked');
+    a[name] = checked ? checked.value : '';
+  });
+  return a;
+}
+
+function computeProgram(key, a){
+  const rules = RULES.filter(r=>r.programs.includes(key));
+  const items = rules.map(r=>{
+    const status = r.evaluate(a);
+    return {
+      text:r.text,
+      clause:r.clause[key],
+      status,
+      reason: status==='fail' ? r.reasonFail(a) : null
+    };
+  });
+  let overall = 'pass';
+  if(items.some(i=>i.status==='fail')) overall='fail';
+  else if(items.some(i=>i.status==='pending')) overall='pending';
+  return {items, overall};
+}
+
+const STATUS_ICON = {pass:'✅', fail:'❌', pending:'⚠️'};
+const STATUS_LABEL = {pass:'目前資格核對通過', fail:'目前不符合資格', pending:'尚未填答完整'};
+
+function renderProgramCard(key, result, bizType){
+  const meta = PROGRAM_META[key];
+  const cap = loanCap(bizType);
+  let html = '<h3>'+meta.name+'</h3>';
+  html += '<p class="doc-ref">'+meta.doc+'</p>';
+  html += '<span class="status-badge '+result.overall+'">'+STATUS_ICON[result.overall]+' '+STATUS_LABEL[result.overall]+'</span>';
+  html += '<ul class="rule-list">';
+  result.items.forEach(it=>{
+    html += '<li><span class="icon status-'+it.status+'">'+STATUS_ICON[it.status]+'</span><span class="txt">'+it.text+
+      '<div class="clause">（'+it.clause+'）</div>'+
+      (it.reason ? '<div class="reason">'+it.reason+'</div>' : '')+
+      '</span></li>';
+  });
+  html += '</ul>';
+  html += '<div class="cap-line">'+(cap ? ('最高貸款額度：新臺幣 '+cap+' 萬元（依您所選事業登記型態試算）') : '尚未選擇事業登記型態，無法試算最高額度')+'</div>';
+  document.getElementById('card-'+key).innerHTML = html;
+}
+
+function buildConclusion(ph, ui, bizType){
+  const cap = loanCap(bizType);
+  const capText = cap ? ('新臺幣 '+cap+' 萬元') : '（需先選擇事業登記型態才能試算）';
+
+  if(ph.overall==='fail' && ui.overall==='fail'){
+    const lines = [].concat(
+      ph.items.filter(i=>i.status==='fail').map(i=>'【鳳凰貸款】'+i.reason),
+      ui.items.filter(i=>i.status==='fail').map(i=>'【就業保險方案】'+i.reason)
+    );
+    return {tone:'fail', title:'❌ 兩個方案目前皆不符合資格', lines};
+  }
+  if(ph.overall==='pass' && ui.overall!=='pass'){
+    const lines = ['最高可貸金額：'+capText, '兩方案互斥，同一事業僅能擇一申請並獲貸。'];
+    if(ui.overall==='fail'){
+      lines.push('就業保險失業者創業貸款目前不符合，原因：'+(ui.items.find(i=>i.status==='fail')||{}).reason);
+    } else {
+      lines.push('就業保險失業者創業貸款尚有問題未填答完整，若也想比較該方案，請完成剩餘問題。');
+    }
+    return {tone:'pass', title:'✅ 建議申請：微型創業鳳凰貸款', lines};
+  }
+  if(ui.overall==='pass' && ph.overall!=='pass'){
+    const lines = ['最高可貸金額：'+capText, '兩方案互斥，同一事業僅能擇一申請並獲貸。'];
+    if(ph.overall==='fail'){
+      lines.push('微型創業鳳凰貸款目前不符合，原因：'+(ph.items.find(i=>i.status==='fail')||{}).reason);
+    } else {
+      lines.push('微型創業鳳凰貸款尚有問題未填答完整，若也想比較該方案，請完成剩餘問題。');
+    }
+    return {tone:'pass', title:'✅ 建議申請：就業保險失業者創業貸款', lines};
+  }
+  if(ph.overall==='pass' && ui.overall==='pass'){
+    return {tone:'warn', title:'⚠️ 兩方案目前皆可能符合資格，但同一事業只能擇一申請', lines:[
+      '最高可貸金額：'+capText+'（兩方案額度規則相同）',
+      '微型創業鳳凰貸款：有事業設立未逾5年、員工未滿5人的限制，但不需要失業／就業保險身分。',
+      '就業保險失業者創業貸款：沒有事業設立年限與員工數上限，但需具備就業保險被保險人身分，且登記負責人前14日內須無投保紀錄。',
+      '建議依自身狀況（是否仍受僱、事業規模）選擇其一，並洽詢承辦分署確認最終審查結果。'
+    ]};
+  }
+  // pending combinations
+  const lines = [];
+  if(ph.overall==='fail') lines.push('微型創業鳳凰貸款目前已確定不符合，原因：'+(ph.items.find(i=>i.status==='fail')||{}).reason);
+  if(ui.overall==='fail') lines.push('就業保險失業者創業貸款目前已確定不符合，原因：'+(ui.items.find(i=>i.status==='fail')||{}).reason);
+  lines.push('請完成上方問卷所有題目，才能取得完整的資格建議。');
+  return {tone:'info', title:'📝 請完成問卷以取得完整建議', lines};
+}
+
+function render(){
+  const a = getAnswers();
+  document.getElementById('repeatLoanNote').style.display = a.isRepeatLoan ? 'block' : 'none';
+
+  const ph = computeProgram('phoenix', a);
+  const ui = computeProgram('ui', a);
+  renderProgramCard('phoenix', ph, a.bizType);
+  renderProgramCard('ui', ui, a.bizType);
+
+  const conclusion = buildConclusion(ph, ui, a.bizType);
+  const el = document.getElementById('conclusion');
+  el.className = 'tone-'+conclusion.tone;
+  el.innerHTML = '<h3>'+conclusion.title+'</h3><ul>'+conclusion.lines.map(l=>'<li>'+l+'</li>').join('')+'</ul>';
+}
+
+document.getElementById('main').addEventListener('input', render);
+document.getElementById('main').addEventListener('change', render);
+document.getElementById('btnReset').addEventListener('click', ()=>{
+  if(confirm('確定要清空所有已填答的內容嗎？')){
+    location.reload();
+  }
+});
+
+render();
+})();
+</script>
+
+</body>
+</html>
