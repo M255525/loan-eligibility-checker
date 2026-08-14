@@ -45,6 +45,12 @@
 
 貸款額度（兩方案相同）：鳳凰貸款第六點／就業保險方案第七條——小規模商業 50 萬；公司/商業/有限合夥或托嬰中心等 200 萬。增貸規則（兩方案相同）：鳳凰貸款第九點／就業保険方案第九條——最多增貸2次，首次＋二次＋三次核給金額合計不得超過上限；此工具僅以頁面底部勾選框顯示提醒文字，不做完整分支判斷邏輯。
 
+## 加入主畫面（PWA，2026-08-14 新增）
+
+比照工作區其餘 10 個已加裝 PWA 的線上工具（`expense-tracker-pwa` 為原始版本，見該專案 CLAUDE.md）：`manifest.json`＋`icons/`（淺灰藍 `#f4f6fb` 背景、藍色 `#2563EB`「貸」字圖示，對應 `--bg`／`--blue`）＋`service-worker.js`（network-first＋同源快取備援，不需要每次改動升版 `CACHE_NAME`，本工具本來就無後端無 `fetch`，SW 純粹是安裝資格判定用）。安裝按鈕（`#installBtn`）放在 `.actions`（跟「操作手冊」「重新填寫」同排、同 `.secondary` 樣式）。
+
+**這次是九個工具做完後才發現漏掉的第十個**：這個工具有公開 GitHub Pages 部署（<https://m255525.github.io/loan-eligibility-checker/>），但本檔（CLAUDE.md）此前完全沒提過「GitHub Pages」或「github.io」字樣，先前用文字搜尋工作區文件找「還有哪些網站要加裝」時因此漏掉——**之後要盤點工作區已上線網站，不能只靠 grep CLAUDE.md/README.md 找關鍵字，要用 `gh repo list M255525` 列出全部公開 repo、逐一 `gh api repos/M255525/<repo>/pages` 查詢才準確**。已從一開始就內建 iOS／iPadOS／macOS 相容性（`isIOSDevice`／`isMacDesktop && isSafariEngine`／`isStandalone` 三種判斷＋對應指引文字，`apple-touch-icon` 180×180＋`mobile-web-app-capable`／`apple-mobile-web-app-capable` 雙標籤），不像前 9 個工具是先做完再回頭補一輪，細節見 [[pwa-install-rollout]]。已用 Playwright 實測 Chromium 觸發 `beforeinstallprompt`、SW 註冊成功。
+
 ## 指令
 
 無建置/測試指令。修改 `index.html` 後直接用瀏覽器開啟驗證即可（若本機未連接 Preview MCP，可用 `python -m http.server <port> --directory 政府補助認證產生器/loan-eligibility-checker` 暫時起一個靜態伺服器測試，測完記得關閉）。

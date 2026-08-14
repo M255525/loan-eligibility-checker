@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>創業貸款資格核對小工具</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563EB">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="貸款資格核對">
 <style>
   :root{
     --blue:#2563EB; --blue-dark:#1e3a8a; --bg:#f4f6fb; --card:#ffffff;
@@ -94,6 +101,7 @@
     <p>依「微型創業鳳凰貸款要點」與「就業保險失業者創業協助辦法」（皆自115年8月1日生效）逐條核對，供申請前自我檢核用</p>
   </div>
   <div class="actions">
+    <button id="installBtn" class="secondary" type="button">📲 加入主畫面</button>
     <a href="manual.html" target="_blank" style="text-decoration:none;"><button class="secondary" type="button">操作手冊</button></a>
     <button id="btnReset" class="secondary">重新填寫</button>
   </div>
@@ -491,6 +499,58 @@ document.getElementById('btnReset').addEventListener('click', ()=>{
 });
 
 render();
+})();
+</script>
+<script>
+/* PWA 加入主畫面 — 獨立運作，跟上面主程式邏輯無關 */
+(function () {
+  'use strict';
+  var deferredPrompt = null;
+  var btn = document.getElementById('installBtn');
+
+  var ua = navigator.userAgent || '';
+  var isIOSDevice = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var isMacDesktop = /Macintosh/.test(ua) && !isIOSDevice;
+  var isSafariEngine = /^((?!chrome|crios|fxios|edgios|android).)*safari/i.test(ua);
+  var isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+
+  function fallbackMessage() {
+    if (isIOSDevice) return '請點畫面上的「分享」圖示，選「加入主畫面」';
+    if (isMacDesktop && isSafariEngine) return '請用選單列「檔案」→「加入 Dock」（Safari 17 以上）';
+    return '瀏覽器不支援，或已安裝過';
+  }
+
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    deferredPrompt = e;
+  });
+  window.addEventListener('appinstalled', function () {
+    deferredPrompt = null;
+  });
+
+  if (btn) {
+    if (isStandalone) {
+      btn.style.display = 'none';
+    } else {
+      var originalLabel = btn.textContent;
+      btn.addEventListener('click', function () {
+        if (!deferredPrompt) {
+          var msg = fallbackMessage();
+          btn.textContent = msg;
+          setTimeout(function () { btn.textContent = originalLabel; }, isIOSDevice || isMacDesktop ? 5000 : 2500);
+          return;
+        }
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(function () { deferredPrompt = null; });
+      });
+    }
+  }
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('service-worker.js').catch(function () {});
+    });
+  }
 })();
 </script>
 
