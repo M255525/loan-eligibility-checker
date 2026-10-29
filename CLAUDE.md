@@ -53,6 +53,10 @@
 
 **回饋機制與快取踩坑修正（2026-08-14，其他姊妹專案使用者實測回報「加入主畫面沒有功能」才發現兩層問題，這個工具是同一批一起修）**：(1) 無 `showToast` 時原本用「暫時置換按鈕文字」當提示，在工具列裡太不明顯——改成 `window.alert(fallbackMessage())`，`deferredPrompt.prompt()` 也包 try/catch。(2) `service-worker.js` 的 `fetch(event.request)` 沒有繞過瀏覽器 HTTP 快取——GitHub Pages 對回應下 `Cache-Control: max-age=600`，10 分鐘內「network-first」名不符實，可能吃到舊版內容重新存進 Cache Storage。改成 `fetch(event.request, {cache:'reload'})` 強制略過 HTTP 快取，`CACHE_NAME` 同步升版 v1→v2。細節見 [[pwa-install-rollout]]。
 
+## 訪客計數器（2026-10-29 新增）
+
+頁尾創作者下方加 visitor-badge（`page_id=m255525.loaneligibilitychecker`），這是頁面唯一的外部資源（圖片，不影響離線運作）；`CACHE_NAME` 同步升版 v2→v3。2026-08-21 全站補訪客數時本工具漏掉，2026-10-29 用「逐一抓線上首頁＋追轉址目標頁」盤點才發現。
+
 ## 指令
 
 無建置/測試指令。修改 `index.html` 後直接用瀏覽器開啟驗證即可（若本機未連接 Preview MCP，可用 `python -m http.server <port> --directory 政府補助認證產生器/loan-eligibility-checker` 暫時起一個靜態伺服器測試，測完記得關閉）。
